@@ -1,0 +1,25 @@
+name: Deploy Image to GCR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-cloudrun:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: authenticate
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
+          service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
+
+      - name: deploy to GRC
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          service: note-api-hs-heilbronn-devsecops-bigpipe
+          image: ghcr.io/${{ github.repository }}/app:${{ github.event_name }}
+          env_vars: BACKEND=memory
