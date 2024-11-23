@@ -12,7 +12,9 @@ jobs:
 
   security-tests:
     uses: ./.github/workflows/security-tests.yml
+    secrets: inherit
 
   build-and-push-docker:
     needs: security-tests
     uses: ./.github/workflows/docker-image.yml
+    secrets: inherit
