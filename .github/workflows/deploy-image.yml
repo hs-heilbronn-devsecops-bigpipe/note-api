@@ -6,7 +6,11 @@ on:
 jobs:
   deploy-cloudrun:
     runs-on: ubuntu-latest
-
+  
+    permissions:
+      id-token: write
+      contents: read
+    
     steps:
       - name: checkout code
         uses: actions/checkout@v3
