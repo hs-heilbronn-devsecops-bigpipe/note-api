@@ -22,4 +22,5 @@ jobs:
         with:
           service: note-api-hs-heilbronn-devsecops-bigpipe
           image: ghcr.io/${{ github.repository }}/app:${{ github.event_name }}
+          region: 'europe-west3'
           env_vars: BACKEND=memory
