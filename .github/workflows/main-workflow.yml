@@ -1,0 +1,25 @@
+name: Main Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  job1:
+    uses: ./.github/workflows/python-tests.yml
+    secrets: inherit
+
+  job2:
+    needs: job1
+    uses: ./.github/workflows/security-tests.yml
+    secrets: inherit
+
+  job3:
+    needs: job2
+    uses: ./.github/workflows/docker-image.yml
+    secrets: inherit
