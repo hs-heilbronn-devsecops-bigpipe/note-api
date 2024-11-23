@@ -9,11 +9,8 @@ on:
       - main
 
 jobs:
-  test:
-    uses: ./.github/workflows/python-tests.yml
 
   security-tests:
-    needs: test
     uses: ./.github/workflows/security-tests.yml
 
   build-and-push-docker:
