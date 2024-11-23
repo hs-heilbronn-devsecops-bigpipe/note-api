@@ -10,12 +10,12 @@ on:
 
 jobs:
   test:
-    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/python-tests.yml@main
+    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/python-tests.yml
 
   security-tests:
     needs: test
-    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/security-tests.yml@main
+    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/security-tests.yml
 
   build-and-push-docker:
     needs: security-tests
-    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/docker-image.yml@main
+    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/docker-image.yml
