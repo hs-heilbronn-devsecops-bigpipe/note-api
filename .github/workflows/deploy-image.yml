@@ -1,7 +1,7 @@
 name: Deploy Image to GCR
 
 on:
-  workflow_dispatch:
+  workflow_call:
 
 jobs:
   deploy-cloudrun:
