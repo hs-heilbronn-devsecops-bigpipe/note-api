@@ -1,12 +1,18 @@
 name: Main Workflow
 
 on:
-    push:
-      branches:
-        - main
-    pull_request:
-      branches:
-        - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
   test:
     uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/python-tests.yml@main
+
+  security-tests:
+    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/security-tests.yml@main
+
+  build-and-push-docker:
+    uses: hs-heilbronn-devsecops-bigpipe/note-api/.github/workflows/docker-image.yml@main
