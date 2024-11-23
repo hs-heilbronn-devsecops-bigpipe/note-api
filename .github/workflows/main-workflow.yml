@@ -10,7 +10,12 @@ on:
 
 jobs:
 
+  test:
+    uses: ./.github/workflows/python-tests.yml
+    secrets: inherit
+
   security-tests:
+    needs: test
     uses: ./.github/workflows/security-tests.yml
     secrets: inherit
 
