@@ -17,6 +17,12 @@ jobs:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
+      - name: Grant permissions to service account
+        run: |
+          gcloud iam service-accounts add-iam-policy-binding hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com \
+            --role roles/iam.serviceAccountTokenCreator \
+            --member "serviceAccount:hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com"
+
       - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v1
         with:
