@@ -18,7 +18,7 @@ jobs:
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
       - name: deploy to GRC
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: note-api-hs-heilbronn-devsecops-bigpipe
           image: ghcr.io/${{ github.repository }}/app:${{ github.event_name }}
