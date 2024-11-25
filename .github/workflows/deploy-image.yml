@@ -13,7 +13,7 @@ jobs:
 
       - name: Build Docker image in GCR
         run: |
-          docker build -t gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} --file
+          docker build -t gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
       - name: authenticate
         uses: google-github-actions/auth@v2
