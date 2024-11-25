@@ -17,10 +17,19 @@ jobs:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
-      - name: deploy to GRC
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: hs-heilbronn-devsecops-note-api-bigpipe
+
+      - name: Build Docker image in GCR
+        run: |
+          gcloud builds submit --tag gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+        
+      - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: note-api-hs-heilbronn-devsecops-bigpipe
-          image: ghcr.io/${{ github.repository }}/app:${{ github.event_name }}
-          region: 'europe-west3'
+          service: note-api-hs-heilbronn-devsecops
+          image: gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          region: europe-west3
           env_vars: BACKEND=memory
