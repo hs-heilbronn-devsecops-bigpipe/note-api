@@ -13,7 +13,7 @@ jobs:
 
       - name: Build Docker image in GCR
         run: |
-          docker build -t gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
+          docker build -t docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
       - name: authenticate
         uses: google-github-actions/auth@v2
@@ -25,6 +25,6 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: note-api-hs-heilbronn-devsecops
-          image: gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          image: docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
