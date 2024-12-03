@@ -1,41 +1,61 @@
-name: Deploy Image to GCR
+name: Docker Image and Deploy
 
 on:
   workflow_call:
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
-  deploy-cloudrun:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: checkout code
-        uses: actions/checkout@v3
+      # 1. Setup QEMU for cross-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: authenticate
+      # 2. Setup Docker Buildx for multi-arch builds
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 3. Log in to GitHub Container Registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.MY_GITHUB_TOKEN }}
+
+      # 4. Build and push Docker image to GitHub Container Registry
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
+
+      # 5. Authenticate with Google Cloud
+      - name: Authenticate with GCP
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
-      - name: Set up Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v2'
-
-      - name: Configure Docker
+      # 6. Install Skopeo
+      - name: Install Skopeo
         run: |
-          gcloud auth configure-docker europe-west3-docker.pkg.dev
+          sudo apt-get update
+          sudo apt-get install -y skopeo
 
-      - name: Build Docker image in GCR
+      # 7. Copy Image with Skopeo to GCR
+      - name: Copy Image to GCR
         run: |
-          docker build -t docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
+          skopeo copy \
+            --src-creds "${{ github.actor }}:${{ secrets.MY_GITHUB_TOKEN }}" \
+            docker://ghcr.io/${{ github.repository }}/app:${{ github.sha }} \
+            docker://gcr.io/hs-heilbronn-devsecops/app:${{ github.sha }}
 
+      # 8. Deploy to Cloud Run
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-hs-heilbronn-devsecops
-          image: docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          image: gcr.io/hs-heilbronn-devsecops/app:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
