@@ -11,15 +11,22 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v3
 
-      - name: Build Docker image in GCR
-        run: |
-          docker build -t docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
-
       - name: authenticate
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker europe-west3-docker.pkg.dev
+
+      - name: Build Docker image in GCR
+        run: |
+          docker build -t docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
