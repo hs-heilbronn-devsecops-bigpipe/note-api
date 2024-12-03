@@ -27,16 +27,16 @@ jobs:
 
       - name: Build Docker image in GCR
         run: |
-          docker build -t gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
+          docker build -t europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
       - name: Push Docker image to GCR
         run: |
-          docker push gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          docker push europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-bigpipe
-          image: gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
