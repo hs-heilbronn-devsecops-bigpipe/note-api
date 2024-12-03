@@ -29,6 +29,10 @@ jobs:
         run: |
           docker build -t gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
+      - name: Push Docker image to GCR
+        run: |
+          docker push gcr.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
