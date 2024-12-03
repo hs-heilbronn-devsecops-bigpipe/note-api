@@ -3,6 +3,10 @@ name: Deploy Image to GCR
 on:
   workflow_call:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy-cloudrun:
     runs-on: ubuntu-latest
