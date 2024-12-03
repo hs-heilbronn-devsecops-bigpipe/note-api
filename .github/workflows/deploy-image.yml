@@ -29,7 +29,7 @@ jobs:
           docker build -t docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
 
       - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-hs-heilbronn-devsecops
           image: docker.io/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
