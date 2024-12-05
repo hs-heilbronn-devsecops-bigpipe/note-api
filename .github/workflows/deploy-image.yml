@@ -9,9 +9,9 @@ jobs:
 
     permissions:
       contents: read
-      actions: read                 # Allows reading actions and workflows
-      security-events: write        # Allows uploading SARIF files
-      id-token: write  # Allow id toke write
+      actions: read
+      security-events: write
+      id-token: write
 
 
     steps:
@@ -35,19 +35,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.MY_GITHUB_TOKEN }}
 
-      - name: GithubWorkflowsSuck
+      - name: Fetch tag push
         run: |
           MY_IMAGE=ghcr.io/${{ github.repository }}/app:${{ github.sha }}
           docker pull $MY_IMAGE
-          NEW_IMAGE=europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/note-api:${{ github.sha }}
+          NEW_IMAGE=europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/main:${{ github.sha }}
           docker tag $MY_IMAGE $NEW_IMAGE
           docker push $NEW_IMAGE
 
       - name: Deploy to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: note-api-bigpipe
-          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/note-api:${{ github.sha }}
+          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/main:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
           project_id: hs-heilbronn-devsecops
