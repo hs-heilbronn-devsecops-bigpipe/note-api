@@ -11,14 +11,6 @@ on:
 
 jobs:
 
-  deploy-cloudrun:
-    runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
-      packages: read
-
   job1:
     uses: ./.github/workflows/python-tests.yml
     secrets: inherit
@@ -37,3 +29,4 @@ jobs:
     needs: job3
     uses: ./.github/workflows/deploy-image.yml
     secrets: inherit
+
