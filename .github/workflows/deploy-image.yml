@@ -12,6 +12,11 @@ jobs:
   deploy-cloudrun:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+      packages: read
+
     steps:
       - name: checkout code
         uses: actions/checkout@v3
@@ -22,28 +27,10 @@ jobs:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
-      - name: Setup google SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: 'note-api'
-
-      - name: Configure Docker
-        run: |
-          gcloud auth configure-docker europe-west3-docker.pkg.dev
-
-      - name: Build docker image
-        run: |
-          docker build -t europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
-
-      - name: Push docker image
-        run: |
-          docker push europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
-
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-bigpipe
-          image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+          image: docker.io/${{ github.repository }}/note-api:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
-          project_id: hs-heilbronn-devsecops
