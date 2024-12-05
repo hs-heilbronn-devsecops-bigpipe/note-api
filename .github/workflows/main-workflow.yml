@@ -9,8 +9,9 @@ on:
       - main
 
 permissions:
-  id-token: write
-  contents: read
+    id-token: write
+    contents: read
+    packages: write
 
 jobs:
 

@@ -3,10 +3,6 @@ name: Deploy Image to GCR
 on:
   workflow_call:
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   deploy-cloudrun:
     runs-on: ubuntu-latest
@@ -29,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: europe-west3-docker.pkg.dev/${{ github.repository }}/app:${{ github.sha }}
+          tags: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
         
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
