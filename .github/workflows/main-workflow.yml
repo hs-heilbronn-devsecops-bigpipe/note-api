@@ -32,6 +32,11 @@ jobs:
           workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
           service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
 
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: 'note-api'
+
       # Step 3: Set up Docker authentication for Google Artifact Registry
       - name: Authenticate Docker with Google Artifact Registry
         run: |
