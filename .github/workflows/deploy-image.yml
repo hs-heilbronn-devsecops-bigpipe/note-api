@@ -31,6 +31,6 @@ jobs:
         uses: google-github-actions/deploy-cloudrun@v1
         with:
           service: note-api-bigpipe
-          image: docker.io/${{ github.repository }}/note-api:${{ github.sha }}
+          image: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ github.repository }}/note-api:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
