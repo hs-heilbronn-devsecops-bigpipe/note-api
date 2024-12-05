@@ -33,11 +33,11 @@ jobs:
 
       - name: Tag image
         run: |
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/app:${{ github.sha }} gcr.io/${{ secrets.GCP_PID }}/note-api/app:${{ github.sha }}
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/app:${{ github.sha }} gcr.io/${{ secrets.GCP_PID }}/app:${{ github.sha }}
 
       - name: Push image
         run: |
-          gcr.io/${{ secrets.GCP_PID }}/note-api/app:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PID }}/app:${{ github.sha }}
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
