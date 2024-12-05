@@ -21,12 +21,14 @@ jobs:
         run: |
           gcloud auth configure-docker europe-west3-docker.pkg.dev
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
-        
+      - name: Build docker image
+        run: |
+          docker build europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }} .
+
+      - name: Push docker image
+        run: |
+          docker push europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
+
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v1
         with:
@@ -34,3 +36,4 @@ jobs:
           image: europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/bigpipe:${{ github.sha }}
           region: europe-west3
           env_vars: BACKEND=memory
+          project_id: hs-heilbronn-devsecops
