@@ -33,7 +33,6 @@ jobs:
 
       - name: Push docker image
         run: |
-          gcloud auth login
           docker push europe-west3-docker.pkg.dev/hs-heilbronn-devsecops/note-api/note-api:${{ github.sha }}
 
       - name: Deploy to Cloud Run
