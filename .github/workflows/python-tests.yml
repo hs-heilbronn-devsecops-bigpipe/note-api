@@ -17,6 +17,12 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: authenticate
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/70756149774/locations/global/workloadIdentityPools/github-actions/providers/github-repos'
+          service_account: 'hshn-devsecops-service-account@hs-heilbronn-devsecops.iam.gserviceaccount.com'
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
