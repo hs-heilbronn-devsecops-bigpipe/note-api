@@ -8,6 +8,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
