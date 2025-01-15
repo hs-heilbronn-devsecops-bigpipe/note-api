@@ -9,6 +9,24 @@ from starlette.responses import RedirectResponse
 from .backends import Backend, RedisBackend, MemoryBackend, GCSBackend
 from .model import Note, CreateNoteRequest
 
+from opentelemetry import trace
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.resources import SERVICE_NAME
+
+resource = Resource(attributes={
+    SERVICE_NAME: "notes-api"
+})
+trace.set_tracer_provider(TracerProvider(resource=resource))
+big_pipe_tracer = trace.get_tracer(__name__)
+cloud_trace_span_exporter = CloudTraceSpanExporter()
+span_processor = BatchSpanProcessor(cloud_trace_span_exporter)
+trace.get_tracer_provider().add_span_processor(span_processor)
+
+
 app = FastAPI()
 
 my_backend: Optional[Backend] = None
@@ -30,35 +48,44 @@ def get_backend() -> Backend:
 
 @app.get('/')
 def redirect_to_notes() -> None:
-    return RedirectResponse(url='/notes')
+    with big_pipe_tracer.start_as_current_span('redirect_to_notes') as span:
+        return RedirectResponse(url='/notes')
 
 
 @app.get('/notes')
 def get_notes(backend: Annotated[Backend, Depends(get_backend)]) -> List[Note]:
-    keys = backend.keys()
-
-    Notes = []
-    for key in keys:
-        Notes.append(backend.get(key))
-    return Notes
+    with big_pipe_tracer.start_as_current_span('get_notes') as span:
+        keys = backend.keys()
+        Notes = []
+        for key in keys:
+            Notes.append(backend.get(key))
+        return Notes
 
 
 @app.get('/notes/{note_id}')
 def get_note(note_id: str,
              backend: Annotated[Backend, Depends(get_backend)]) -> Note:
-    return backend.get(note_id)
+    with big_pipe_tracer.start_as_current_span('get_note') as span:
+        return backend.get(note_id)
 
 
 @app.put('/notes/{note_id}')
 def update_note(note_id: str,
                 request: CreateNoteRequest,
                 backend: Annotated[Backend, Depends(get_backend)]) -> None:
-    backend.set(note_id, request)
+    with big_pipe_tracer.start_as_current_span('update_note') as span:
+        backend.set(note_id, request)
 
 
 @app.post('/notes')
 def create_note(request: CreateNoteRequest,
                 backend: Annotated[Backend, Depends(get_backend)]) -> str:
-    note_id = str(uuid4())
-    backend.set(note_id, request)
-    return note_id
+    with big_pipe_tracer.start_as_current_span('create_note') as span:
+        note_id = str(uuid4())
+        backend.set(note_id, request)
+        span.set_attribute('note_id', note_id)
+        span.set_attribute('request', request.title)
+        return note_id
+
+
+FastAPIInstrumentor.instrument_app(app)
